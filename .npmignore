@@ -1,0 +1,9 @@
+*.log
+node_modules
+*.un~
+yarn.lock
+src
+flow-typed
+.idea
+.history
+.prettierrc

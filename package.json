@@ -1,0 +1,39 @@
+{
+  "name": "gridsome-source-printful",
+  "version": "0.1.0",
+  "description": "Gridsome Source Plugin for building websites using Printful as a data source",
+  "author": {
+    "email": "svengau@gmail.com",
+    "name": "Sven Gaubert"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/svengau/gridsome-source-printful"
+  },
+  "bugs": {
+    "url": "https://github.com/svengau/gridsome-source-printful"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "format": "prettier --write '*.js'"
+  },
+  "keywords": [
+    "gridsome",
+    "gridsome-plugin",
+    "gridsome-source-plugin",
+    "printful"
+  ],
+  "dependencies": {
+    "axios": "^0.19.2",
+    "debug": "^4.1.1",
+    "slugify": "^1.4.0"
+  },
+  "devDependencies": {
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.5.3"
+  },
+  "pre-commit": [
+    "format"
+  ]
+}
