@@ -21,7 +21,9 @@ plugins: [
       objectTypes: ['SyncProduct', 'WarehouseProduct', 'Country', 'TaxRate'],
       apiKey: 'xxxxxxxxx',
       // optional params
-      downloadFiles: true,
+      downloadFiles: true, //enable file downloading in general
+      downloadProductThumbnail: true, //downloads the thumbnail of the product and the applied design
+      downloadProductImages: true, //downloads all other images (thumbnail + preview) that are coming from printful in .variant.files 
       imageDirectory: 'printful_images',
     },
   },
