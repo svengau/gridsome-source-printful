@@ -23,6 +23,8 @@ class PrintfulSource {
       secretKey: null,
       paginationLimit: 20,
       downloadFiles: false,
+      downloadProductThumbnail: true, //to keep backwards compatibility
+      downloadProductImages: false,
       imageDirectory: 'printful_images',
     };
   }
@@ -60,10 +62,14 @@ class PrintfulSource {
     if (!imageUrl) {
       return null;
     }
-    const filename = `${prefix}_${imageUrl
+    let filename = `${prefix}_${imageUrl
       .split('/')
       .pop()
       .toLowerCase()}`;
+
+    filename = filename.split('?')
+      .shift();
+
     const filePath = path.resolve(pwd, filename);
 
     if (fs.existsSync(filePath)) {
@@ -110,7 +116,7 @@ class PrintfulSource {
       const {
         data: { paging, result },
       } = await printful.get(
-        `${url}?limit=${paginationLimit}&offset=${offset}`
+        `${url}?limit=${paginationLimit}&offset=${offset}`,
       );
       records = [...records, ...result];
       offset += paginationLimit;
@@ -125,7 +131,7 @@ class PrintfulSource {
   }
 
   async fetchSyncProduct({ pwd, addCollection }) {
-    const { downloadFiles, typeName } = this.options;
+    const { downloadFiles, downloadProductThumbnail, downloadProductImages, typeName } = this.options;
     const printful = this.getPrintfulClient();
 
     const result = await this.getAllItems({ url: 'sync/products' });
@@ -139,21 +145,42 @@ class PrintfulSource {
               ...o,
               retail_price: parseFloat(o.retail_price),
             })),
-          }))
-      )
+          })),
+      ),
     );
 
     if (downloadFiles) {
       await Promise.all(
         products.map(async node => {
-          if (node.thumbnail_url) {
+          if (node.thumbnail_url && downloadProductThumbnail) {
             node.thumbnail_img = await this.downloadImage(
               pwd,
               node.id,
-              node.thumbnail_url
+              node.thumbnail_url,
             );
           }
-        })
+
+          if (node.variants && downloadProductImages) {
+            for (const variant of node.variants) {
+              if (variant.files !== undefined) {
+                for (const file of variant.files) {
+                  file.thumbnail_img = await this.downloadImage(
+                    pwd,
+                    file.id,
+                    file.thumbnail_url,
+                  );
+
+                  file.preview_img = await this.downloadImage(
+                    pwd,
+                    file.id,
+                    file.preview_url,
+                  );
+                }
+              }
+            }
+          }
+
+        }),
       );
     }
 
@@ -278,8 +305,8 @@ class PrintfulSource {
           this[method]({
             pwd,
             addCollection,
-          })
-        )
+          }),
+        ),
     );
   }
 }
